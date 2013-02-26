@@ -15,7 +15,7 @@ unary: identifier ~':';
 binary: (BINARYSYMBOL)+;
 multiword: keyword+;
 
-identifier: UALPHA UALPHANUMERIC*;
+identifier: UNDERSCORE_ALPHA UNDERSCORE_ALPHANUMERIC*;
 
 methodSequence: PERIOD* pragmas PERIOD* temporaries PERIOD* pragmas PERIOD* statements;
 
@@ -26,11 +26,11 @@ statements:
 	return PERIOD* |
 	PERIOD*;
 
-return: '^' expression;
+return: RETURN expression;
 	
 expression: assignment* cascadeExpression;
 
-assignment: variable ':=';
+assignment: variable ASSIGN;
 
 cascadeExpression: keywordExpression cascadeMessage*;
 
@@ -79,9 +79,9 @@ literal:
 	arrayLiteral |
 	byteLiteral |
 	symbolLiteral |
-	nilLiteral |
-	trueLiteral | 
-	falseLiteral;
+	NIL |
+	TRUE | 
+	FALSE;
 	
 numberLiteral: (DIGITS 'r')? '-'? DIGITS (PERIOD DIGITS)? ('e' '-'? DIGITS)?;
 stringLiteral: '\'' ('\'\'' | ~'\'')* '\'';
@@ -89,9 +89,6 @@ charLiteral: '$' .;
 arrayLiteral: '#(' arrayItem ')';
 byteLiteral: '#[' numberLiteral ']';
 symbolLiteral: '#'+ symbol;
-nilLiteral: 'nil';
-trueLiteral: 'true';
-falseLiteral: 'false';
 
 symbol: unary | binary | multiword | stringLiteral;
 
@@ -100,10 +97,15 @@ arrayLiteralArray: '(' arrayItem* ')';
 byteLiteralArray: '[' arrayItem* ']';
 
 PERIOD:	'.';
+ASSIGN: ':=';
+RETURN: '^';
+NIL: 'nil';
+TRUE: 'true';
+FALSE: 'false';
 fragment ALPHA: 'a'..'z' | 'A'..'Z';
-UALPHA: ALPHA | '_' ;
-DIGIT:	'0'..'9';
+fragment UNDERSCORE_ALPHA: ALPHA | '_' ;
+fragment DIGIT:	'0'..'9';
 DIGITS:	DIGIT+;
 ALPHANUMERIC: ALPHA | DIGIT;
-UALPHANUMERIC: UALPHA | DIGIT;
+UNDERSCORE_ALPHANUMERIC: UNDERSCORE_ALPHA | DIGIT;
 BINARYSYMBOL: '!'|'%'|'&'|'*'|'+'|','|'-'|'/'|'<'|'='|'>'|'?'|'@'|'\\'|'|'|'~';
