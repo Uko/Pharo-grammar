@@ -20,7 +20,18 @@ identifier: UALPHA UALPHANUMERIC*;
 methodSequence: PERIOD* pragmas PERIOD* temporaries PERIOD* pragmas PERIOD* statements;
 
 temporaries: '|' variable* '|';
-statements: 'stub';
+
+statements: 
+	expression (PERIOD* | (PERIOD+ statements)) |
+	return PERIOD* |
+	PERIOD*;
+
+return: '^' expression;
+	
+expression: assignment* cascadeExpression;
+
+assignment: variable ':=';
+cascadeExpression: 'stub';
 
 pragmas: pragma*;
 pragma:  '<' pragmaMessage '>';
@@ -60,7 +71,7 @@ arrayLiteralArray: '(' arrayItem* ')';
 byteLiteralArray: '[' arrayItem* ']';
 
 PERIOD:	'.';
-ALPHA: 'a'..'z' | 'A'..'Z';
+fragment ALPHA: 'a'..'z' | 'A'..'Z';
 UALPHA: ALPHA | '_' ;
 DIGIT:	'0'..'9';
 DIGITS:	DIGIT+;

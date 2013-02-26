@@ -60,4 +60,12 @@ binaryPragma -> arrayItem;
 methodSequence -> temporaries;
 temporaries -> variable;
 methodSequence -> statements;
+statements -> expression;
+expression -> assignment;
+assignment -> variable;
+expression -> cascadeExpression;
+statements -> PERIOD;
+statements -> statements;
+statements -> return;
+return -> expression;
 }
