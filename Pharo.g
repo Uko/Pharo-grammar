@@ -8,10 +8,10 @@ keywordMethod: (keyword variable)+;
 unaryMethod: identifier;
 binaryMethod: binary variable;
 
-keyword: identifier ':';
+keyword: identifier COLON;
 variable: identifier;
 
-unary: identifier ~':';
+unary: identifier ~COLON;
 binary: (BINARYSYMBOL)+;
 multiword: keyword+;
 
@@ -19,7 +19,7 @@ identifier: UNDERSCORE_ALPHA UNDERSCORE_ALPHANUMERIC*;
 
 methodSequence: PERIOD* pragmas PERIOD* temporaries PERIOD* pragmas PERIOD* statements;
 
-temporaries: '|' variable* '|';
+temporaries: PIPE variable* PIPE;
 
 statements: 
 	expression (PERIOD* | (PERIOD+ statements)) |
@@ -34,7 +34,7 @@ assignment: variable ASSIGN;
 
 cascadeExpression: keywordExpression cascadeMessage*;
 
-cascadeMessage: ';' message;
+cascadeMessage: SEMICOLON message;
 
 message:
 	keywordMessage |
@@ -52,18 +52,18 @@ unaryMessage: unary;
 
 primary: literal | variable | block | parens | array;
 
-parens: '(' expression ')';
-array: '{' expression (PERIOD expression)* PERIOD'}';
+parens: LPAREN expression RPAREN;
+array: LCURLY expression (PERIOD expression)* PERIOD RCURLY;
 
-block: '[' blockBody ']';
+block: LBRACKET blockBody RBRACKET;
 blockBody: blockArguments? sequence;
-blockArguments: blockArgument+ '|';
-blockArgument: ':' variable;
+blockArguments: blockArgument+ PIPE;
+blockArgument: COLON variable;
 
 sequence: temporaries PERIOD* statements;
 
 pragmas: pragma*;
-pragma:  '<' pragmaMessage '>';
+pragma:  LT pragmaMessage GT;
 pragmaMessage: keywordPragma | unaryPragma | binaryPragma;
 
 keywordPragma: (keyword arrayItem)+;
@@ -83,25 +83,44 @@ literal:
 	TRUE | 
 	FALSE;
 	
-numberLiteral: (DIGITS 'r')? '-'? DIGITS (PERIOD DIGITS)? ('e' '-'? DIGITS)?;
-stringLiteral: '\'' ('\'\'' | ~'\'')* '\'';
-charLiteral: '$' .;
-arrayLiteral: '#(' arrayItem ')';
-byteLiteral: '#[' numberLiteral ']';
-symbolLiteral: '#'+ symbol;
+numberLiteral: (DIGITS RADIX)? MINUS? DIGITS (PERIOD DIGITS)? (EXP MINUS? DIGITS)?;
+stringLiteral: QUOTE (QUOTE QUOTE | ~QUOTE)* QUOTE;
+charLiteral: DOLAR .;
+arrayLiteral: BEGIN_ARRAY arrayItem RPAREN;
+byteLiteral: BEGIN_BIN_ARRAY numberLiteral RBRACKET;
+symbolLiteral: HASH+ symbol;
 
 symbol: unary | binary | multiword | stringLiteral;
 
 symbolLiteralArray: symbol;
-arrayLiteralArray: '(' arrayItem* ')';
-byteLiteralArray: '[' arrayItem* ']';
+arrayLiteralArray: RPAREN arrayItem* RPAREN;
+byteLiteralArray: LBRACKET arrayItem* RBRACKET;
 
 PERIOD:	'.';
 ASSIGN: ':=';
+COLON: ':';
+SEMICOLON: ';';
+DOLAR: '$';
 RETURN: '^';
+QUOTE: '\'';
 NIL: 'nil';
 TRUE: 'true';
 FALSE: 'false';
+PIPE: '|';
+LT: '<';
+GT: '>';
+HASH: '#';
+BEGIN_ARRAY: HASH LPAREN;
+LPAREN: '(';
+RPAREN: ')';
+BEGIN_BIN_ARRAY: HASH LPAREN;
+LBRACKET: ']';
+RBRACKET: '[';
+LCURLY: '{';
+RCURLY: '}';
+MINUS: '-';
+RADIX: 'r';
+EXP: 'e';
 fragment ALPHA: 'a'..'z' | 'A'..'Z';
 fragment UNDERSCORE_ALPHA: ALPHA | '_' ;
 fragment DIGIT:	'0'..'9';
