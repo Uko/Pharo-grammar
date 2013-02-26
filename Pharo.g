@@ -31,7 +31,36 @@ return: '^' expression;
 expression: assignment* cascadeExpression;
 
 assignment: variable ':=';
-cascadeExpression: 'stub';
+
+cascadeExpression: keywordExpression cascadeMessage*;
+
+cascadeMessage: ';' message;
+
+message:
+	keywordMessage |
+	binaryMessage |
+	unaryMessage;
+
+keywordExpression: binaryExpression keywordMessage?;
+keywordMessage: (keyword binaryExpression)+;
+
+binaryExpression: unaryExpression binaryMessage*;
+binaryMessage: binary unaryExpression;
+
+unaryExpression: primary unaryMessage*;
+unaryMessage: unary;
+
+primary: literal | variable | block | parens | array;
+
+parens: '(' expression ')';
+array: '{' expression (PERIOD expression)* PERIOD'}';
+
+block: '[' blockBody ']';
+blockBody: blockArguments? sequence;
+blockArguments: blockArgument+ '|';
+blockArgument: ':' variable;
+
+sequence: temporaries PERIOD* statements;
 
 pragmas: pragma*;
 pragma:  '<' pragmaMessage '>';
